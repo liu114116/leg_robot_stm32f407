@@ -1,0 +1,46 @@
+# MDK-ARM 编译输出
+*.o
+*.d
+*.crf
+*.htm
+*.dep
+*.iex
+*.lnp
+*.sct
+*.lst
+*.map
+*.hex
+*.axf
+*.bin
+*.elf
+*.build_log.htm
+*.tra
+*.fed
+*.scr
+JLinkLog.txt
+JLink*
+
+# MDK-ARM 用户特定配置
+*.uvguix.*
+*.uvguix.*.crf
+
+# 调试配置
+DebugConfig/
+
+# RTE 组件
+RTE/
+
+# STM32CubeMX 临时文件
+*.ioc.bak
+
+# 编辑器临时文件
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+.idea/
+
+# 系统文件
+Thumbs.db
+Desktop.ini
