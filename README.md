@@ -31,7 +31,7 @@
 | **FOC** | `foc.c/h` | FOC 磁场定向控制算法 |
 | **Servo** | `servo.c/h` | 舵机控制 |
 | **IK** | `IK.c/h` | 逆运动学解算 |
-| **Col** | `col.c/h` | 碰撞检测 |
+| **Col** | `col.c/h` | 主要控制逻辑 |
 | **PID** | `pid.c/h` | PID 控制器 |
 | **HC05** | `hc05.c/h` | 蓝牙透传模块驱动（USART） |
 | **Key** | `key.c/h` | 按键输入 |
