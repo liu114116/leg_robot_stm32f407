@@ -1,16 +1,16 @@
 #include "IK.h"
 
 
-#define PI 3.14159265f
+/* PI å·²åœ¨ foc.h ä¸­å®šä¹‰ï¼Œé€šè¿‡ IK.h é—´æŽ¥å¼•å…¥ */
 
-// ½Ç¶È¹éÒ»»¯µ½ [-180¡ã, 180¡ã]
+// ï¿½Ç¶È¹ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ [-180ï¿½ï¿½, 180ï¿½ï¿½]
 static float normalize_deg(float deg) {
     while (deg > 180.0f) deg -= 360.0f;
     while (deg < -180.0f) deg += 360.0f;
     return deg;
 }
 
-// ½Ç¶È -> ¶æ»úÊýÖµ£¨ÏÞÖÆÔÚ 100~4000£©
+// ï¿½Ç¶ï¿½ -> ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 100~4000ï¿½ï¿½
 static uint16_t angle_to_servo(float deg) {
     float value = SERVO_CENTER + deg * SERVO_RANGE / ANGLE_MAX;
     if (value < 100) value = 100;
@@ -18,17 +18,17 @@ static uint16_t angle_to_servo(float deg) {
     return (uint16_t)value;
 }
 
-// ¼ì²é½Ç¶ÈÊÇ·ñÔÚÓÐÐ§·¶Î§ÄÚ
+// ï¿½ï¿½ï¿½Ç¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Î§ï¿½ï¿½
 static int is_angle_valid(float a_deg, float b_deg) {
-    // a ±ØÐëÔÚ [-180¡ã, 0¡ã]
+    // a ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [-180ï¿½ï¿½, 0ï¿½ï¿½]
     if (a_deg < -180.0f || a_deg > 0.0f) return 0;
-    // b ±ØÐëÔÚ [-180¡ã, 180¡ã]
+    // b ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ [-180ï¿½ï¿½, 180ï¿½ï¿½]
     if (b_deg < -180.0f || b_deg > 180.0f) return 0;
     return 1;
 }
 
-// ÄæÔË¶¯Ñ§£ºÊäÈë (x, y)£¬Êä³ö¶æ»úÊýÖµ
-// ·µ»ØÖµ£º0=³É¹¦£¬-1=³¬³ö·¶Î§£¬-2=ÎÞÓÐÐ§½â
+// ï¿½ï¿½ï¿½Ë¶ï¿½Ñ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (x, y)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+// ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½0=ï¿½É¹ï¿½ï¿½ï¿½-1=ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½-2=ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
 int inverse_kinematics(float x, float y, uint16_t *a_servo, uint16_t *b_servo) {
     float r = sqrtf(x*x + y*y);
     if (r > 2.0f * L || r < 0.001f) return -1;
@@ -36,20 +36,20 @@ int inverse_kinematics(float x, float y, uint16_t *a_servo, uint16_t *b_servo) {
     float phi = atan2f(y, x);
     float half = acosf(r / (2.0f * L));
 
-    // Á½¸ö½â
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     float b1_rad = phi - PI + half;
     float b2_rad = phi + PI - half;
     
     float a1_rad = atan2f(y + L * sinf(b1_rad), x + L * cosf(b1_rad));
     float a2_rad = atan2f(y + L * sinf(b2_rad), x + L * cosf(b2_rad));
 
-    // ×ªÎª½Ç¶È²¢¹éÒ»»¯
+    // ×ªÎªï¿½Ç¶È²ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
     float a1 = normalize_deg(a1_rad * RAD2DEG);
     float b1 = normalize_deg(b1_rad * RAD2DEG);
     float a2 = normalize_deg(a2_rad * RAD2DEG);
     float b2 = normalize_deg(b2_rad * RAD2DEG);
 
-    // ¼ÆËãÏ¥¹Ø½Ú½Ç¶È (±ØÐëÎªÕý)
+    // ï¿½ï¿½ï¿½ï¿½Ï¥ï¿½Ø½Ú½Ç¶ï¿½ (ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½)
     float knee1 = 360.0f + a1 - b1;
     float knee2 = 360.0f + a2 - b2;
     
@@ -58,14 +58,14 @@ int inverse_kinematics(float x, float y, uint16_t *a_servo, uint16_t *b_servo) {
     while (knee2 >= 360.0f) knee2 -= 360.0f;
     while (knee2 < 0.0f) knee2 += 360.0f;
 
-    // ¼ì²éÁ½¸ö½âµÄÓÐÐ§ÐÔ
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
     int valid1 = is_angle_valid(a1, b1) && (knee1 > 0);
     int valid2 = is_angle_valid(a2, b2) && (knee2 > 0);
 
     float a_deg, b_deg;
     
     if (valid1 && valid2) {
-        // Á½¸ö¶¼ÓÐÐ§£¬Ñ¡ÔñÏ¥¹Ø½Ú½Ç¶È¸ü½Ó½ü 90¡ã µÄÄÇ¸ö£¨¸ü×ÔÈ»£©
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ñ¡ï¿½ï¿½Ï¥ï¿½Ø½Ú½Ç¶È¸ï¿½ï¿½Ó½ï¿½ 90ï¿½ï¿½ ï¿½ï¿½ï¿½Ç¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½
         if (fabsf(knee1 - 90.0f) < fabsf(knee2 - 90.0f)) {
             a_deg = a1; b_deg = b1;
         } else {
@@ -76,10 +76,10 @@ int inverse_kinematics(float x, float y, uint16_t *a_servo, uint16_t *b_servo) {
     } else if (valid2) {
         a_deg = a2; b_deg = b2;
     } else {
-        return -2;  // ÎÞÓÐÐ§½â
+        return -2;  // ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
     }
 
-    // ×ª»»Îª¶æ»úÊýÖµ
+    // ×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Öµ
     *a_servo = angle_to_servo(a_deg);
     *b_servo = angle_to_servo(b_deg);
 

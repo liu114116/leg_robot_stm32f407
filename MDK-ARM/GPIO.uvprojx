@@ -891,6 +891,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IK.c</FilePath>
             </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -18,6 +18,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "foc.h"
@@ -25,116 +26,90 @@
 #include "col.h"
 #include "led.h"
 /* USER CODE END Includes */
+
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 /* USER CODE END PTD */
+
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 /* USER CODE END PD */
+
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 /* USER CODE END PM */
+
 /* Private variables ---------------------------------------------------------*/
+
 /* USER CODE BEGIN PV */
-#define MOTOR_CONTROL_MIN_PERIOD_MS  5U
-static uint32_t last_foc_tick = 0U;
-static uint32_t encoder_report_tick = 0U;
-static uint32_t led_tick = 0U;
-static uint8_t led_state = 0U;
 /* USER CODE END PV */
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 /* USER CODE END PFP */
+
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /* USER CODE END 0 */
+
+/**
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
-    /* USER CODE BEGIN 1 */
-    /* USER CODE END 1 */
-    HAL_Init();
-    /* USER CODE BEGIN Init */
-    /* USER CODE END Init */
-    SystemClock_Config();
-    /* USER CODE BEGIN SysInit */
-    /* USER CODE END SysInit */
-    MX_GPIO_Init();
-    MX_USART1_UART_Init();
-    MX_I2C1_Init();
-    MX_I2C3_Init();
-    MX_TIM2_Init();
-    MX_TIM3_Init();
-    MX_TIM4_Init();
-    MX_TIM5_Init();
-    MX_UART5_Init();
-    MX_TIM6_Init();
-    MX_TIM7_Init();
-    /* USER CODE BEGIN 2 */
-		
-		Encoder_Init(0U);
-    FOC_Init(1);
-    HAL_TIM_Base_Start_IT(&htim6);
-    led_tick =HAL_GetTick();
-		encoder_report_tick = HAL_GetTick();
-		last_foc_tick =HAL_GetTick();
-    /* USER CODE END 2 */
-    /* USER CODE BEGIN WHILE */
+
+  /* USER CODE BEGIN 1 */
+  /* USER CODE END 1 */
+
+  /* MCU Configuration--------------------------------------------------------*/
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
+
+  /* USER CODE BEGIN Init */
+  /* USER CODE END Init */
+
+  /* Configure the system clock */
+  SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+  /* USER CODE END SysInit */
+
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART1_UART_Init();
+  MX_I2C1_Init();
+  MX_I2C3_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
+  MX_TIM4_Init();
+  MX_TIM5_Init();
+  MX_UART5_Init();
+  MX_TIM6_Init();
+  MX_TIM7_Init();
+  /* USER CODE BEGIN 2 */
+  Encoder_Init(0U);
+  HAL_TIM_Base_Start_IT(&htim6);
+  col_init();
+
+  /* Uncomment to run a one-shot ID-mapping test (prints over USART1).
+     col_test_servo_map();
+     col_test_motor_map();
+  */
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
     while (1)
     {
-				uint32_t now_tick =
-						HAL_GetTick();
-				uint32_t elapsed_ms =
-						now_tick -
-						last_foc_tick;
-				/*
-				 * 实际间隔达到5ms才执行一次速度环。
-				 */
-				if (elapsed_ms >= 8U)
-				{
-						last_foc_tick =
-								now_tick;
-						FOC_RunSpeed(1U,10.0f,(float)elapsed_ms);
-				}
-				/*
-				 * 每1秒发送一次编码器缓存数据。
-				 * 注意使用Encoder_GetRaw，不要使用Encoder_ReadRaw。
-				 */
-				if ((now_tick -
-						 encoder_report_tick) >= 500U)
-				{
-						encoder_report_tick =
-								now_tick;
-						HC05_Printf_IT(
-								"raw=%u angle=%.3f track=%.3f "
-								"vel=%.3f vf=%.3f uq=%.3f\r\n",
-								Encoder_GetRaw(1U),
-								Encoder_GetAngleRad(1U),
-								Encoder_GetAngleRad_withtrack(1U),
-								Encoder_GetVelocity(1U),
-								Encoder_GetVel_filt(1U),
-								g_voltage_q[0]
-						);
-				}
-				/*
-				 * LED任务。
-				 */
-				if ((now_tick -
-						 led_tick) >= 500U)
-				{
-						led_tick =
-								now_tick;
-						led_state =
-								!led_state;
-						led_show(
-								1U,
-								led_state
-						);
-				}
-        /* USER CODE END WHILE */
-        /* USER CODE BEGIN 3 */
+        col_update(HAL_GetTick());
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
     }
-    /* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
